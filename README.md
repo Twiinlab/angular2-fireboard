@@ -1,1 +1,1 @@
-# angular2-firebase
+# Angular2, AngularFire2, and Firebase Sample
