@@ -1,0 +1,13 @@
+<h1>
+  {{title}}
+</h1>
+  <ul>
+    <li *ngFor="let item of items | async">
+      <input type="text" #updatesize [value]="item.text" />
+      <button (click)="update(item.$key, updatesize.value)">Update</button>
+      <button (click)="deleteItem(item.$key)">Delete</button>
+    </li>
+  </ul>
+  <input type="text" #newitem />
+  <button (click)="add(newitem.value)">Add</button>
+  <button (click)="deleteEverything()">Delete All</button>
