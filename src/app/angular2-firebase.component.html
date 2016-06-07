@@ -1,6 +1,9 @@
 <h1>
   {{title}}
 </h1>
+  <div class="row-fluid">
+      <canvas id="board" #myBoard width="640" height="480"></canvas>
+  </div>
   <ul>
     <li *ngFor="let item of items | async">
       <input type="text" #updatesize [value]="item.text" />
