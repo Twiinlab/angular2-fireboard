@@ -1,4 +1,4 @@
-import { Component, Class, OnInit, AfterViewInit } from '@angular/core';
+import { Component, Class, OnInit, AfterViewInit, Inject } from '@angular/core';
 import {ViewChild} from "@angular/core";
 import { AngularFire, FirebaseObjectObservable, FirebaseListObservable } from 'angularfire2';
 // import { Observable } from 'rxjs/Observable';
@@ -13,8 +13,9 @@ import { Observable, Subject } from 'rxjs/Rx';
 
 export class Angular2FirebaseAppComponent {
   title = 'angular2-firebase works!';
-  items: FirebaseListObservable<any>;
+  users: FirebaseListObservable<any>;
   lines: FirebaseListObservable<any>;
+  window;
   prevPoint;
   currentLine;
   afDatabase;
@@ -25,10 +26,11 @@ export class Angular2FirebaseAppComponent {
   @ViewChild("myBoard") myBoard;
 
 
-  constructor(af: AngularFire) {
-    this.items = af.database.list('/items');
+  constructor(af: AngularFire , @Inject(Window) window: Window) {
+    this.window = window;
+    this.users = af.database.list('/users');
     this.lines = af.database.list('/lines');
-
+    
      this.lines._ref
         .on('child_added', (child, prevKey) => {
           console.log("child_added: " +  child.val());
@@ -44,18 +46,6 @@ export class Angular2FirebaseAppComponent {
           console.log("child_removed: " +  child.val());
           this.clearCanvas();
         });
-  }
-  add(newName: string) {
-    this.items.push({ text: newName });
-  }
-  update(key: string, newSize: string) {
-    this.items.update(key, { size: newSize });
-  }
-  deleteItem(key: string) {    
-    this.items.remove(key); 
-  }
-  deleteEverything() {
-    this.items.remove();
   }
   
   getOffset(event) {
@@ -79,6 +69,15 @@ export class Angular2FirebaseAppComponent {
   ngOnInit() {
     // debugger;
     // var ctx = this.myBoard.getContext('2d');
+    var myUsers = this.users;
+    var myUser = this.users.push({ userName: sessionStorage.getItem("userName") });
+    this.window.onunload = function(e) {
+        myUsers.remove(myUser);
+        return e.returnValue;
+    };
+    this.window.onbeforeunload = function () {
+        return "Do you really want to close?";
+    };
   }
   
   ngAfterViewInit() {
