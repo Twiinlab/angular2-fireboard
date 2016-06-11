@@ -28,41 +28,22 @@ export class Angular2FirebaseAppComponent {
   constructor(af: AngularFire) {
     this.items = af.database.list('/items');
     this.lines = af.database.list('/lines');
-
-     this.lines._ref
-        .on('child_added', (child, prevKey) => {
-          console.log("child_added: " +  child.val());
+    this.lines._ref.on('child_added', (child, prevKey) => {
           this.drawCanvasLine(child);
         });
-    this.lines._ref
-        .on('child_changed', (child, prevKey) => {
-          console.log("Child_changed: " +  child.val());
+    this.lines._ref.on('child_changed', (child, prevKey) => {
           this.drawCanvasLine(child);
         });
-    this.lines._ref
-        .on('child_removed', (child, prevKey) => {
-          console.log("child_removed: " +  child.val());
+    this.lines._ref.on('child_removed', (child, prevKey) => {
           this.clearCanvas();
         });
-  }
-  add(newName: string) {
-    this.items.push({ text: newName });
-  }
-  update(key: string, newSize: string) {
-    this.items.update(key, { size: newSize });
-  }
-  deleteItem(key: string) {    
-    this.items.remove(key); 
-  }
-  deleteEverything() {
-    this.items.remove();
   }
   
   getOffset(event) {
       if (event.constructor === TouchEvent){
         return {
-          x: event.touches[0].target.offsetLeft - event.touches[0].clientX,
-          y: event.touches[0].target.offsetTop - event.touches[0].clientY,
+          x: event.touches[0].clientX - event.touches[0].target.offsetLeft,
+          y: event.touches[0].clientY - event.touches[0].target.offsetTop,
       };
       } else {
         return {
@@ -88,59 +69,59 @@ export class Angular2FirebaseAppComponent {
       console.log(this.myBoard);
       self.canvas = this.myBoard.nativeElement;
       self.context = self.canvas.getContext("2d");
-      
-      self.context.lineWidth = 3;
+      self.canvas.width  = window.innerWidth;
+      self.canvas.height = window.innerHeight;
+      self.context.lineWidth = 2;
      
-      var mouseDowns  = Observable.fromEvent(self.canvas, 'touchstart');//touchstart mousedown
-      var mouseUps    = Observable.fromEvent(document, 'touchend');//touchend mouseup
-      var mouseMoves  = Observable.fromEvent(self.canvas, 'touchmove');//touchmove mousemove
+      // var touchDowns  = Observable.fromEvent(self.canvas, 'touchstart');//touchstart mousedown
+      // var touchUps    = Observable.fromEvent(document, 'touchend');//touchend mouseup
+      // var touchMoves  = Observable.fromEvent(self.canvas, 'touchmove');//touchmove mousemove
       
-      var mouseDrags = mouseDowns.map(downEvent => {
-                // _this.prevPoint = "";
-                console.log("mouseDowns");
-                self.currentLine = self.lines.push({ colour: self.selectedColor});
-                // _this.fire('down');
-                return mouseMoves.takeUntil(mouseUps).map(drag => {
-                    //console.log("mouseMoves");
-                    return this.getOffset(drag);
-                   
-                });
-            });       
-            
-      mouseUps.subscribe(mouseup=>{
-        console.log("mouseUp");
+      // var mouseDowns  = Observable.fromEvent(self.canvas, 'mousedown');//touchstart mousedown
+      // var mouseUps    = Observable.fromEvent(document, 'mouseup');//touchend mouseup
+      // var mouseMoves  = Observable.fromEvent(self.canvas, 'mousemove');//touchmove mousemove
+      
+      var mergeDown = Observable.merge(Observable.fromEvent(self.canvas, 'touchstart'), 
+                                       Observable.fromEvent(self.canvas, 'mousedown'));
+                                       
+      var mergeUps = Observable.merge(Observable.fromEvent(self.canvas, 'touchend'), 
+                                       Observable.fromEvent(self.canvas, 'mouseup'));
+      
+      var mergeMoves = Observable.merge(Observable.fromEvent(self.canvas, 'touchmove'), 
+                                       Observable.fromEvent(self.canvas, 'mousemove'));
+      
+      //var mouseDrags = mouseDowns.map(downEvent => {
+      var mergeDrags = mergeDown.map(downEvent => {
+          self.currentLine = self.lines.push({ colour: self.selectedColor});
+          return mergeMoves.takeUntil(mergeUps).map(drag => {
+              return this.getOffset(drag);
+          });
+      });       
+      mergeDrags.subscribe(drags=>{
+        this.prevPoint = "";
+        drags.subscribe(function (move) {
+              console.log('move', {x: move.x, y: move.y});
+              self.currentLine.ref().child('points').push({x: move.x, y: move.y});
+          });
       });
-      mouseDrags.subscribe(drags=>{
-          this.prevPoint = "";
-          console.log("mouseDowns");
-          // _this.fire('down');
-          drags.subscribe(function (move) {
-                    console.log('move', {x: move.x, y: move.y});
-                    self.currentLine.ref().child('points').push({x: move.x, y: move.y});
-                });
-        });
   }
   
   drawCanvasLine(line) {
-      line.val()
       var colour = line.val().colour;
       var points = line.val().points;
       var point;
       for (var pointKey in points) {
         point = points[pointKey];
-        if (!this.prevPoint)
-            {
-                this.prevPoint = {x: point.x, y: point.y}
-            }
-            else
-            {
-                this.context.beginPath();
-                this.context.strokeStyle = colour;//color
-                this.context.moveTo(this.prevPoint.x, this.prevPoint.y);
-                this.context.lineTo(point.x, point.y);
-                this.context.stroke(); 
-                this.prevPoint = {x: point.x, y: point.y}  
-            }
+        if (!this.prevPoint) {
+            this.prevPoint = {x: point.x, y: point.y}
+        } else {
+            this.context.beginPath();
+            this.context.strokeStyle = colour;
+            this.context.moveTo(this.prevPoint.x, this.prevPoint.y);
+            this.context.lineTo(point.x, point.y);
+            this.context.stroke(); 
+            this.prevPoint = {x: point.x, y: point.y}  
+        }
       }
       this.prevPoint = null;
   }

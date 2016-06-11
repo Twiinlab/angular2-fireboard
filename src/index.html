@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <title>Angular2Firebase</title>
   <base href="/">
-
+  <link rel="stylesheet" type="text/css" href="assets/css/site.css">
   {{#unless environment.production}}
   <script src="/ember-cli-live-reload.js" type="text/javascript"></script>
   {{/unless}}
@@ -13,9 +13,6 @@
 </head>
 <body>
   <angular2-firebase-app>Loading...</angular2-firebase-app>
-
-  
-
     {{#each scripts.polyfills}}<script src="{{.}}"></script>{{/each}}
     <script>
       System.import('system-config.js').then(function () {
