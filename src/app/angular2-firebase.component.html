@@ -6,3 +6,13 @@
   </div>
   <input type="color" [(ngModel)]="selectedColor" placeholder="color" value="{{selectedColor}}" />
   <button (click)="deleteLines()">Clean Board</button>
+  
+  <section class="main">
+    <ul class="todo-list">
+      <li *ngFor="let user of users | async">
+        <div class="view">
+          <label>{{user.userName}}</label>
+        </div>
+      </li>
+    </ul>
+  </section>

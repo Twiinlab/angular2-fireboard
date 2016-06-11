@@ -1,4 +1,4 @@
-import { Component, Class, OnInit, AfterViewInit } from '@angular/core';
+import { Component, Class, OnInit, AfterViewInit, Inject } from '@angular/core';
 import {ViewChild} from "@angular/core";
 import { AngularFire, FirebaseObjectObservable, FirebaseListObservable } from 'angularfire2';
 // import { Observable } from 'rxjs/Observable';
@@ -13,8 +13,9 @@ import { Observable, Subject } from 'rxjs/Rx';
 
 export class Angular2FirebaseAppComponent {
   title = 'angular2-firebase works!';
-  items: FirebaseListObservable<any>;
+  users: FirebaseListObservable<any>;
   lines: FirebaseListObservable<any>;
+  window;
   prevPoint;
   currentLine;
   afDatabase;
@@ -25,8 +26,9 @@ export class Angular2FirebaseAppComponent {
   @ViewChild("myBoard") myBoard;
 
 
-  constructor(af: AngularFire) {
-    this.items = af.database.list('/items');
+  constructor(af: AngularFire , @Inject(Window) window: Window) {
+    this.window = window;
+    this.users = af.database.list('/users');
     this.lines = af.database.list('/lines');
     this.lines._ref.on('child_added', (child, prevKey) => {
           this.drawCanvasLine(child);
@@ -58,29 +60,26 @@ export class Angular2FirebaseAppComponent {
   }
         
   ngOnInit() {
-    // debugger;
-    // var ctx = this.myBoard.getContext('2d');
+    var myUsers = this.users;
+    var myUser = this.users.push({ userName: sessionStorage.getItem("userName") });
+    this.window.onunload = function(e) {
+        myUsers.remove(myUser);
+        return e.returnValue;
+    };
+    this.window.onbeforeunload = function () {
+        return "Do you really want to close?";
+    };
   }
   
   ngAfterViewInit() {
     
       var self = this;
-    
-      console.log(this.myBoard);
       self.canvas = this.myBoard.nativeElement;
       self.context = self.canvas.getContext("2d");
       self.canvas.width  = window.innerWidth;
       self.canvas.height = window.innerHeight;
       self.context.lineWidth = 2;
-     
-      // var touchDowns  = Observable.fromEvent(self.canvas, 'touchstart');//touchstart mousedown
-      // var touchUps    = Observable.fromEvent(document, 'touchend');//touchend mouseup
-      // var touchMoves  = Observable.fromEvent(self.canvas, 'touchmove');//touchmove mousemove
-      
-      // var mouseDowns  = Observable.fromEvent(self.canvas, 'mousedown');//touchstart mousedown
-      // var mouseUps    = Observable.fromEvent(document, 'mouseup');//touchend mouseup
-      // var mouseMoves  = Observable.fromEvent(self.canvas, 'mousemove');//touchmove mousemove
-      
+
       var mergeDown = Observable.merge(Observable.fromEvent(self.canvas, 'touchstart'), 
                                        Observable.fromEvent(self.canvas, 'mousedown'));
                                        
@@ -90,7 +89,6 @@ export class Angular2FirebaseAppComponent {
       var mergeMoves = Observable.merge(Observable.fromEvent(self.canvas, 'touchmove'), 
                                        Observable.fromEvent(self.canvas, 'mousemove'));
       
-      //var mouseDrags = mouseDowns.map(downEvent => {
       var mergeDrags = mergeDown.map(downEvent => {
           self.currentLine = self.lines.push({ colour: self.selectedColor});
           return mergeMoves.takeUntil(mergeUps).map(drag => {
@@ -129,8 +127,6 @@ export class Angular2FirebaseAppComponent {
   clearCanvas() {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
   }
-
-
 
 }
 
