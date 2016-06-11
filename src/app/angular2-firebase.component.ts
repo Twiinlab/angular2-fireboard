@@ -14,14 +14,36 @@ import { Observable, Subject } from 'rxjs/Rx';
 export class Angular2FirebaseAppComponent {
   title = 'angular2-firebase works!';
   items: FirebaseListObservable<any>;
-  
+  lines: FirebaseListObservable<any>;
   prevPoint;
+  currentLine;
+  afDatabase;
+  selectedColor = "FFFFFF";
   
+  canvas;
   context:CanvasRenderingContext2D;
   @ViewChild("myBoard") myBoard;
-  
+
+
   constructor(af: AngularFire) {
     this.items = af.database.list('/items');
+    this.lines = af.database.list('/lines');
+
+     this.lines._ref
+        .on('child_added', (child, prevKey) => {
+          console.log("child_added: " +  child.val());
+          this.drawCanvasLine(child);
+        });
+    this.lines._ref
+        .on('child_changed', (child, prevKey) => {
+          console.log("Child_changed: " +  child.val());
+          this.drawCanvasLine(child);
+        });
+    this.lines._ref
+        .on('child_removed', (child, prevKey) => {
+          console.log("child_removed: " +  child.val());
+          this.clearCanvas();
+        });
   }
   add(newName: string) {
     this.items.push({ text: newName });
@@ -37,10 +59,21 @@ export class Angular2FirebaseAppComponent {
   }
   
   getOffset(event) {
-      return {
+      if (event.constructor === TouchEvent){
+        return {
+          x: event.touches[0].target.offsetLeft - event.touches[0].clientX,
+          y: event.touches[0].target.offsetTop - event.touches[0].clientY,
+      };
+      } else {
+        return {
           x: event.offsetX === undefined ? event.layerX : event.offsetX,
           y: event.offsetY === undefined ? event.layerY : event.offsetY
       };
+      }
+      
+  }
+  deleteLines() {
+    this.lines.remove();
   }
         
   ngOnInit() {
@@ -49,23 +82,28 @@ export class Angular2FirebaseAppComponent {
   }
   
   ngAfterViewInit() {
+    
+      var self = this;
+    
       console.log(this.myBoard);
-      let canvas = this.myBoard.nativeElement;
-      let context = canvas.getContext("2d");
+      self.canvas = this.myBoard.nativeElement;
+      self.context = self.canvas.getContext("2d");
       
-      context.lineWidth = 3;
+      self.context.lineWidth = 3;
      
-      var mouseDowns  = Observable.fromEvent(canvas, 'mousedown');
-      var mouseUps    = Observable.fromEvent(document, 'mouseup');
-      var mouseMoves  = Observable.fromEvent(canvas, 'mousemove');
+      var mouseDowns  = Observable.fromEvent(self.canvas, 'touchstart');//touchstart mousedown
+      var mouseUps    = Observable.fromEvent(document, 'touchend');//touchend mouseup
+      var mouseMoves  = Observable.fromEvent(self.canvas, 'touchmove');//touchmove mousemove
       
       var mouseDrags = mouseDowns.map(downEvent => {
                 // _this.prevPoint = "";
                 console.log("mouseDowns");
+                self.currentLine = self.lines.push({ colour: self.selectedColor});
                 // _this.fire('down');
                 return mouseMoves.takeUntil(mouseUps).map(drag => {
                     //console.log("mouseMoves");
                     return this.getOffset(drag);
+                   
                 });
             });       
             
@@ -78,24 +116,40 @@ export class Angular2FirebaseAppComponent {
           // _this.fire('down');
           drags.subscribe(function (move) {
                     console.log('move', {x: move.x, y: move.y});
-                    if (!this.prevPoint)
-                    {
-                        this.prevPoint = {x: move.x, y: move.y}
-                    }
-                    else
-                    {
-                        context.beginPath();
-                        context.strokeStyle = "#FF0000";//color
-                        context.moveTo(this.prevPoint.x, this.prevPoint.y);
-                        context.lineTo(move.x, move.y);
-                        context.stroke(); 
-                        this.prevPoint = {x: move.x, y: move.y}
-                        
-                    }
-                    
-                    //dragref.ref().child('points').push({x: move.x, y: move.y});
+                    self.currentLine.ref().child('points').push({x: move.x, y: move.y});
                 });
-      });
-}
+        });
+  }
+  
+  drawCanvasLine(line) {
+      line.val()
+      var colour = line.val().colour;
+      var points = line.val().points;
+      var point;
+      for (var pointKey in points) {
+        point = points[pointKey];
+        if (!this.prevPoint)
+            {
+                this.prevPoint = {x: point.x, y: point.y}
+            }
+            else
+            {
+                this.context.beginPath();
+                this.context.strokeStyle = colour;//color
+                this.context.moveTo(this.prevPoint.x, this.prevPoint.y);
+                this.context.lineTo(point.x, point.y);
+                this.context.stroke(); 
+                this.prevPoint = {x: point.x, y: point.y}  
+            }
+      }
+      this.prevPoint = null;
+  }
+  
+  clearCanvas() {
+    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+  }
+
+
+
 }
 

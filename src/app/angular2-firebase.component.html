@@ -2,15 +2,7 @@
   {{title}}
 </h1>
   <div class="row-fluid">
-      <canvas id="board" #myBoard width="640" height="480"></canvas>
+      <canvas id="board" #myBoard ></canvas>
   </div>
-  <ul>
-    <li *ngFor="let item of items | async">
-      <input type="text" #updatesize [value]="item.text" />
-      <button (click)="update(item.$key, updatesize.value)">Update</button>
-      <button (click)="deleteItem(item.$key)">Delete</button>
-    </li>
-  </ul>
-  <input type="text" #newitem />
-  <button (click)="add(newitem.value)">Add</button>
-  <button (click)="deleteEverything()">Delete All</button>
+  <input type="color" [(ngModel)]="selectedColor" placeholder="color" value="{{selectedColor}}" />
+  <button (click)="deleteLines()">Clean Board</button>
