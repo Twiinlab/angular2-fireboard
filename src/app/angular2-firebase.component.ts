@@ -20,6 +20,7 @@ export class Angular2FirebaseAppComponent {
   currentLine;
   afDatabase;
   selectedColor = "FFFFFF";
+  userCount = 0;
   
   canvas;
   context:CanvasRenderingContext2D;
@@ -30,6 +31,13 @@ export class Angular2FirebaseAppComponent {
     this.window = window;
     this.users = af.database.list('/users');
     this.lines = af.database.list('/lines');
+
+    this.users._ref
+       .on("value", snapshot => {
+          console.log("value: " +  snapshot.numChildren());
+          this.userCount = snapshot.numChildren();
+       });
+       
     this.lines._ref.on('child_added', (child, prevKey) => {
           this.drawCanvasLine(child);
         });
@@ -76,8 +84,9 @@ export class Angular2FirebaseAppComponent {
       var self = this;
       self.canvas = this.myBoard.nativeElement;
       self.context = self.canvas.getContext("2d");
-      self.canvas.width  = window.innerWidth;
-      self.canvas.height = window.innerHeight;
+      self.canvas.width  = document.getElementById('board-box').offsetWidth;
+      self.canvas.height = window.innerHeight - 200; //document.getElementById('board-box').offsetHeight;
+      
       self.context.lineWidth = 2;
 
       var mergeDown = Observable.merge(Observable.fromEvent(self.canvas, 'touchstart'), 

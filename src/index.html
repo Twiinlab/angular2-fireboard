@@ -4,6 +4,8 @@
   <meta charset="utf-8">
   <title>Angular2Firebase</title>
   <base href="/">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"> 
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
   <link rel="stylesheet" type="text/css" href="assets/css/site.css">
   {{#unless environment.production}}
   <script src="/ember-cli-live-reload.js" type="text/javascript"></script>
@@ -12,7 +14,7 @@
   <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
 <body onload="userPrompt()">
-  <angular2-firebase-app>Loading...</angular2-firebase-app>
+  <angular2-firebase-app class="container">Loading...</angular2-firebase-app>
     {{#each scripts.polyfills}}<script src="{{.}}"></script>{{/each}}
     <script>
       System.import('system-config.js').then(function () {
@@ -26,10 +28,6 @@
           }
       }
     </script>
-
-  
-
-
-
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js">
 </body>
 </html>
