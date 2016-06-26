@@ -1,7 +1,7 @@
 import { bootstrap } from '@angular/platform-browser-dynamic';
 import { enableProdMode, provide } from '@angular/core';
 import { Angular2FirebaseAppComponent, environment } from './app/';
-import { FIREBASE_PROVIDERS, defaultFirebase } from 'angularfire2';
+import { FIREBASE_PROVIDERS, defaultFirebase, firebaseAuthConfig, AuthProviders, AuthMethods } from 'angularfire2';
 
 if (environment.production) {
   enableProdMode();
@@ -9,6 +9,6 @@ if (environment.production) {
 
 bootstrap(Angular2FirebaseAppComponent,[
   FIREBASE_PROVIDERS,
-  defaultFirebase('https://angular2fire-board.firebaseio.com/'),
+  defaultFirebase('https://angular2-fireboard.firebaseio.com/'),
   [provide(Window, {useValue: window})]
 ]);
