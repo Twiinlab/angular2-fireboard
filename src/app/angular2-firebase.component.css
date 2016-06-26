@@ -4,3 +4,24 @@
   /*width:100%;
   height:auto;*/
 }
+
+/*custom style*/
+.example-fill-remaining-space {
+  flex: 1 1 auto;
+}
+
+.custom-icon {
+   padding-left: 20px;
+}
+
+.fix-top {
+      margin-top: -40px;
+}
+
+.colorPicker {
+  visibility: hidden;
+}
+
+.side_nav {
+  width: 250px;
+}

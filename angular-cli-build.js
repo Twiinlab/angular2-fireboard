@@ -12,6 +12,7 @@ module.exports = function(defaults) {
       'reflect-metadata/**/*.+(js|js.map)',
       'rxjs/**/*.+(js|js.map)',
       '@angular/**/*.+(js|js.map)',
+      '@angular2-material/**/*.js',
       // above are the existing entries
       // below are the AngularFire entries
       'angularfire2/**/*.js',

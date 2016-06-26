@@ -1,14 +1,22 @@
-import { Component, Class, OnInit, AfterViewInit, Inject } from '@angular/core';
+import { Component, Class, OnInit, AfterViewInit, Inject, ChangeDetectionStrategy } from '@angular/core';
 import {ViewChild} from "@angular/core";
 import { AngularFire, FirebaseObjectObservable, FirebaseListObservable } from 'angularfire2';
-// import { Observable } from 'rxjs/Observable';
 import { Observable, Subject } from 'rxjs/Rx';
+
+import {MdToolbar} from '@angular2-material/toolbar';
+import {MdButton} from '@angular2-material/button';
+import {MD_LIST_DIRECTIVES} from '@angular2-material/list';
+import {MdCard} from '@angular2-material/card';
+import {MdInput} from '@angular2-material/input';
+import {MdSidenav, MdSidenavLayout} from '@angular2-material/sidenav';
 
 @Component({
   moduleId: module.id,
   selector: 'angular2-firebase-app',
   templateUrl: 'angular2-firebase.component.html',
-  styleUrls: ['angular2-firebase.component.css']
+  styleUrls: ['angular2-firebase.component.css'],
+   directives: [MdToolbar, MdButton, MD_LIST_DIRECTIVES, MdCard, MdInput, MdSidenav, MdSidenavLayout],
+   changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class Angular2FirebaseAppComponent {
@@ -19,7 +27,7 @@ export class Angular2FirebaseAppComponent {
   prevPoint;
   currentLine;
   afDatabase;
-  selectedColor = "FFFFFF";
+  selectedColor = "#000000";
   userCount = 0;
   
   canvas;
@@ -49,11 +57,16 @@ export class Angular2FirebaseAppComponent {
         });
   }
   
+  onSelectColor() {
+      var colorpicker = document.getElementById('colorPicker');
+      colorpicker.click();
+  }
+                    
   getOffset(event) {
       if (event.constructor === TouchEvent){
         return {
-          x: event.touches[0].clientX - event.touches[0].target.offsetLeft,
-          y: event.touches[0].clientY - event.touches[0].target.offsetTop,
+          x: event.touches[0].clientX - event.touches[0].target.offsetLeft - 24,
+          y: event.touches[0].clientY - event.touches[0].target.offsetTop - 64,
       };
       } else {
         return {
@@ -63,11 +76,15 @@ export class Angular2FirebaseAppComponent {
       }
       
   }
-  deleteLines() {
+  onCleanLines() {
     this.lines.remove();
+  }
+  onCleanUser() {
+      this.users.remove();
   }
         
   ngOnInit() {
+    var self = this;
     var myUsers = this.users;
     var myUser = this.users.push({ userName: sessionStorage.getItem("userName") });
     this.window.onunload = function(e) {
@@ -77,6 +94,13 @@ export class Angular2FirebaseAppComponent {
     this.window.onbeforeunload = function () {
         return "Do you really want to close?";
     };
+    
+    var colorPicker = <HTMLInputElement>document.getElementById("colorPicker");
+    var colorButton = document.getElementById("colorButton");
+    
+   colorPicker.addEventListener("input", function(event) {
+            colorButton.style.backgroundColor =  colorPicker.value;
+    }, false);
   }
   
   ngAfterViewInit() {
@@ -85,7 +109,7 @@ export class Angular2FirebaseAppComponent {
       self.canvas = this.myBoard.nativeElement;
       self.context = self.canvas.getContext("2d");
       self.canvas.width  = document.getElementById('board-box').offsetWidth;
-      self.canvas.height = window.innerHeight - 200; //document.getElementById('board-box').offsetHeight;
+      self.canvas.height = window.innerHeight - 200;
       
       self.context.lineWidth = 2;
 

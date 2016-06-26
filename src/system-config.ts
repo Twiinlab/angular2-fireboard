@@ -1,20 +1,3 @@
-/***********************************************************************************************
- * User Configuration.
- **********************************************************************************************/
-/** Map relative paths to URLs. */
-const map: any = {
-  'firebase': 'vendor/firebase/lib/firebase-web.js',
-  'angularfire2': 'vendor/angularfire2'
-};
-
-/** User packages configuration. */
-const packages: any = {
-  angularfire2: {
-    defaultExtension: 'js',
-    main: 'angularfire2.js'
-  }
-};
-
 ////////////////////////////////////////////////////////////////////////////////////////////////
 /***********************************************************************************************
  * Everything underneath this line is managed by the CLI.
@@ -38,10 +21,30 @@ const barrels: string[] = [
   /** @cli-barrel */
 ];
 
-const cliSystemConfigPackages: any = {};
+const packages: any = {};
 barrels.forEach((barrelName: string) => {
-  cliSystemConfigPackages[barrelName] = { main: 'index' };
+  packages[barrelName] = { main: 'index' };
 });
+
+// Angular Material 2 Packages to load.
+  var materialPackages = [
+    'core', 'toolbar', 'button', 'card', 'checkbox', 'icon', 'input', 'list', 'progress-bar',
+    'progress-circle', 'radio', 'sidenav', 'grid-list', 'slide-toggle', 'tabs'
+  ];
+
+materialPackages.forEach(function(item) {
+    // All Material 2 components are prefixed with  @angular2-material and use
+    // the components name as entry point.
+    packages['@angular2-material/' + item] = { 
+      main: item + '.js', 
+      defaultExtension: 'js' };
+});
+
+//Custom Packages
+packages['angularfire2'] = {
+  defaultExtension: 'js',
+  main: 'angularfire2.js'
+}
 
 /** Type declaration for ambient System. */
 declare var System: any;
@@ -51,10 +54,10 @@ System.config({
   map: {
     '@angular': 'vendor/@angular',
     'rxjs': 'vendor/rxjs',
+    'firebase': 'vendor/firebase/lib/firebase-web.js',
+    'angularfire2': 'vendor/angularfire2',
+    '@angular2-material': 'vendor/@angular2-material',
     'main': 'main.js'
   },
-  packages: cliSystemConfigPackages
+  packages: packages
 });
-
-// Apply the user's configuration.
-System.config({ map, packages });
