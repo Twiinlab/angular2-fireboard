@@ -10,12 +10,14 @@ import {MdCard} from '@angular2-material/card';
 import {MdInput} from '@angular2-material/input';
 import {MdSidenav, MdSidenavLayout} from '@angular2-material/sidenav';
 
+import {UserComponent} from './users.component';
+
 @Component({
   moduleId: module.id,
   selector: 'angular2-firebase-app',
   templateUrl: 'angular2-firebase.component.html',
   styleUrls: ['angular2-firebase.component.css'],
-   directives: [MdToolbar, MdButton, MD_LIST_DIRECTIVES, MdCard, MdInput, MdSidenav, MdSidenavLayout],
+   directives: [UserComponent, MdToolbar, MdButton, MD_LIST_DIRECTIVES, MdCard, MdInput, MdSidenav, MdSidenavLayout],
    changeDetection: ChangeDetectionStrategy.OnPush
 })
 
@@ -34,7 +36,11 @@ export class Angular2FirebaseAppComponent {
   context:CanvasRenderingContext2D;
   @ViewChild("myBoard") myBoard;
 
-  constructor(af: AngularFire , @Inject(Window) window: Window) {
+  myUser;
+  lastUid;
+  
+  constructor(public af: AngularFire , @Inject(Window) window: Window) {
+    this.af = af;
     this.window = window;
     this.users = af.database.list('/users');
     this.lines = af.database.list('/lines');
@@ -84,10 +90,10 @@ export class Angular2FirebaseAppComponent {
         
   ngOnInit() {
     var self = this;
-    var myUsers = this.users;
-    var myUser = this.users.push({ userName: sessionStorage.getItem("userName") });
+    
     this.window.onunload = function(e) {
-        myUsers.remove(myUser);
+        self.af.auth.logout();
+        self.users.remove(self.myUser);
         return e.returnValue;
     };
     this.window.onbeforeunload = function () {
@@ -160,5 +166,23 @@ export class Angular2FirebaseAppComponent {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
   }
 
+  onLogin(){
+    var self = this;
+    this.af.auth.login();
+    this.af.auth.subscribe(auth => {
+        if (auth){
+            if (self.lastUid != auth.auth.uid){
+                console.log(auth);
+                self.myUser = self.users.push({ userName: auth.auth.displayName, photo: auth.auth.photoURL });
+            } 
+            self.lastUid = auth.auth.uid;       
+        }
+    });  
+  }
+  onLogout(){
+      this.users.remove(this.myUser);
+      this.af.auth.logout();
+      this.lastUid = null;
+  }
 }
 

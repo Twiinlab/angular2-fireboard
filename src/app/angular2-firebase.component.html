@@ -4,10 +4,18 @@
         <div class="col-md-9 col-sm-12 main">
           <section class="main">
             <md-toolbar color="primary"> 
-                <span>AngularFire2</span>
+                <span>ngFire2</span>
+                <span>({{userCount}} online)</span>
                 <span class="example-fill-remaining-space"></span>
-                <span>Conected: {{userCount}}</span>
-                  <i class="hidden-md hidden-lg fa fa-chevron-right fa-2x custom-icon" aria-hidden="true" (click)="start.open()"></i>
+                 <span *ngIf="af.auth | async">
+                    Hi {{ (af.auth | async)?.auth.displayName }}
+                    <img src="{{ (af.auth | async)?.auth.photoURL }}" alt="" width="50px"/>
+                    <button md-raised-button color="accent" (click)="onLogout()">Logout</button>
+                    </span>
+                    <span *ngIf="!(af.auth | async)">
+                    <button md-raised-button color="accent" (click)="onLogin()" >Login</button>
+                </span>
+                <i class="hidden-md hidden-lg fa fa-chevron-right fa-2x custom-icon" aria-hidden="true" (click)="start.open()"></i>
       
             </md-toolbar>
               <md-card class="tile-card">
@@ -25,38 +33,12 @@
           </section>
         </div>
         <div class="hidden-xs hidden-sm col-md-3 pull-right">
-          <md-toolbar color="primary">
-              <span>Users list</span>
-              <span class="example-fill-remaining-space"></span>
-              <i class="fa fa-retweet" (click)="onCleanUser()" aria-hidden="true"></i>
-          </md-toolbar>
-          <md-card>
-              <md-list dense>
-                  <md-list-item *ngFor="let user of users | async">
-                      <div class="view">
-                        <span>{{user.userName}}</span>
-                      </div>
-                  </md-list-item>
-              </md-list>
-          </md-card>
+          <user-app></user-app>
         </div>
       </div>
     </div>
     <md-sidenav #start align="end" class="side_nav">
-        <md-toolbar color="primary">
-              <span>Users list:</span>
-              <span class="example-fill-remaining-space"></span>
-              <i class="fa fa-retweet" (click)="onCleanUser()" aria-hidden="true"></i>
-          </md-toolbar>
-          <md-card>
-              <md-list dense>
-                  <md-list-item *ngFor="let user of users | async">
-                      <div class="view">
-                        <span>{{user.userName}}</span>
-                      </div>
-                  </md-list-item>
-              </md-list>
-          </md-card>
+        <user-app></user-app>
     </md-sidenav>
       
 </md-sidenav-layout>

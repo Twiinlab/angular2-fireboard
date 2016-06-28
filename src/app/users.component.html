@@ -1,0 +1,13 @@
+<md-toolbar color="primary">
+    <span>Users list:</span>
+    <span class="example-fill-remaining-space"></span>
+    <i class="fa fa-retweet" (click)="onCleanUser()" aria-hidden="true"></i>
+</md-toolbar>
+<md-card>
+    <md-list dense>
+        <md-list-item *ngFor="let user of users | async">
+            <img md-list-avatar src="{{user.photo}}" alt="{{user.userName}}">
+            <h3 md-line> {{user.userName}} </h3>
+        </md-list-item>
+    </md-list>
+</md-card>

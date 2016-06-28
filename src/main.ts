@@ -15,5 +15,9 @@ bootstrap(Angular2FirebaseAppComponent,[
     databaseURL: "https://angular2-fireboard.firebaseio.com",
     storageBucket: "angular2-fireboard.appspot.com",
   }),
+  firebaseAuthConfig({
+    method: AuthMethods.Popup,
+    provider: AuthProviders.Github
+  }),
   [provide(Window, {useValue: window})]
 ]);
