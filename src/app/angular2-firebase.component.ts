@@ -34,7 +34,6 @@ export class Angular2FirebaseAppComponent {
   context:CanvasRenderingContext2D;
   @ViewChild("myBoard") myBoard;
 
-
   constructor(af: AngularFire , @Inject(Window) window: Window) {
     this.window = window;
     this.users = af.database.list('/users');
@@ -132,7 +131,7 @@ export class Angular2FirebaseAppComponent {
         this.prevPoint = "";
         drags.subscribe(function (move) {
               console.log('move', {x: move.x, y: move.y});
-              self.currentLine.ref().child('points').push({x: move.x, y: move.y});
+              self.currentLine.child('points').push({x: move.x, y: move.y});
           });
       });
   }

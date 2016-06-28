@@ -9,6 +9,11 @@ if (environment.production) {
 
 bootstrap(Angular2FirebaseAppComponent,[
   FIREBASE_PROVIDERS,
-  defaultFirebase('https://angular2-fireboard.firebaseio.com/'),
+  defaultFirebase({
+    apiKey: "AIzaSyCBzWF2AsSDm491NsJmm_iJERp7LEMy3wE",
+    authDomain: "angular2-fireboard.firebaseapp.com",
+    databaseURL: "https://angular2-fireboard.firebaseio.com",
+    storageBucket: "angular2-fireboard.appspot.com",
+  }),
   [provide(Window, {useValue: window})]
 ]);

@@ -54,7 +54,7 @@ System.config({
   map: {
     '@angular': 'vendor/@angular',
     'rxjs': 'vendor/rxjs',
-    'firebase': 'vendor/firebase/lib/firebase-web.js',
+    'firebase': 'vendor/firebase/firebase.js',
     'angularfire2': 'vendor/angularfire2',
     '@angular2-material': 'vendor/@angular2-material',
     'main': 'main.js'
