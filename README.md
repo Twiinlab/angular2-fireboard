@@ -1,5 +1,7 @@
-# Angular2, AngularFire2, and the new Firebase Sample
+# Live code demo for Angular2, AngularFire2, and the new Firebase Sample
 
+Looks like this:
+![angular2-fireboard](http://i.giphy.com/xT8qB0NwdZjEiPbxL2.gif)
 
 ## Install
 
