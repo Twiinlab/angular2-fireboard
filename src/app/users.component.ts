@@ -37,7 +37,6 @@ export class UserComponent {
     
     this.users._ref
        .on("value", snapshot => {
-          console.log("value: " +  snapshot.numChildren());
           this.userCount = snapshot.numChildren();
        });
      
@@ -63,7 +62,6 @@ export class UserComponent {
     this.af.auth.subscribe(auth => {
         if (auth){
             if (self.lastUid != auth.auth.uid){
-                console.log(auth);
                 self.myUser = self.users.push({ userName: auth.auth.displayName, photo: auth.auth.photoURL });
             } 
             self.lastUid = auth.auth.uid;       

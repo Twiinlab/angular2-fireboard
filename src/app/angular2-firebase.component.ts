@@ -47,7 +47,6 @@ export class Angular2FirebaseAppComponent {
 
     this.users._ref
        .on("value", snapshot => {
-          console.log("value: " +  snapshot.numChildren());
           this.userCount = snapshot.numChildren();
        });
        
@@ -136,7 +135,6 @@ export class Angular2FirebaseAppComponent {
       mergeDrags.subscribe(drags=>{
         this.prevPoint = "";
         drags.subscribe(function (move) {
-              console.log('move', {x: move.x, y: move.y});
               self.currentLine.child('points').push({x: move.x, y: move.y});
           });
       });
@@ -172,7 +170,6 @@ export class Angular2FirebaseAppComponent {
     this.af.auth.subscribe(auth => {
         if (auth){
             if (self.lastUid != auth.auth.uid){
-                console.log(auth);
                 self.myUser = self.users.push({ userName: auth.auth.displayName, photo: auth.auth.photoURL });
             } 
             self.lastUid = auth.auth.uid;       

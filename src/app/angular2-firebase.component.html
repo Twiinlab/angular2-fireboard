@@ -4,11 +4,11 @@
         <div class="col-md-9 col-sm-12 main">
           <section class="main">
             <md-toolbar color="primary"> 
-                <span>ngFire2</span>
-                <span>({{userCount}} online)</span>
+                <b>ngFire2 </b>
+                <span class="hidden-xs hidden-sm">&nbsp;&nbsp;-&nbsp;({{userCount}} online)</span>
                 <span class="example-fill-remaining-space"></span>
                  <span *ngIf="af.auth | async">
-                    Hi {{ (af.auth | async)?.auth.displayName }}
+                    <label class="hidden-xs hidden-sm">Hi {{ (af.auth | async)?.auth.displayName }}</label>
                     <img src="{{ (af.auth | async)?.auth.photoURL }}" alt="" width="50px"/>
                     <button md-raised-button color="accent" (click)="onLogout()">Logout</button>
                     </span>
