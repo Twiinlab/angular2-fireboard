@@ -12,7 +12,7 @@ git clone https://github.com/Twiinlab/angular2-firebase.git
 Dependency Download
 ```bash
 npm install
-
+npm install2
 ```
 
 ## Run
